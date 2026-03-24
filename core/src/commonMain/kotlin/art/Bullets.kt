@@ -2,5 +2,5 @@ package art
 
 class Bullets(
     override val indent: Int,
-    val items: List<Span>
+    val items: List<List<Span>>
 ) : Element

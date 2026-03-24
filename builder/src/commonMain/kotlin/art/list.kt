@@ -1,10 +1,14 @@
 package art
 
 class ListBuilder(
-    val items: MutableList<Span> = mutableListOf()
+    val items: MutableList<List<Span>> = mutableListOf()
 ) {
     fun li(text: String) {
-        items.add(Span(text))
+        items.add(listOf(Span(text)))
+    }
+
+    fun li(builder: SpanBuilder.() -> Unit) {
+        items.add(SpanBuilder().apply(builder).spans)
     }
 }
 
