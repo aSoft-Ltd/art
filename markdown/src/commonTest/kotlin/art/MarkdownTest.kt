@@ -9,7 +9,11 @@ class MarkdownTest {
         val doc = document {
             h1("Introduction")
         }
-        expect(doc.toMarkdown()).toBe("# Introduction\n")
+        expect(doc.toMarkdown()).toBe("""
+            # Introduction
+            
+            
+        """.trimIndent())
     }
 
     @Test
@@ -22,7 +26,14 @@ class MarkdownTest {
                 li("Item 2")
             }
         }
-        expect(doc.toMarkdown()).toBe("# Introduction\nThis is a test document\n- Item 1\n- Item 2\n")
+        expect(doc.toMarkdown()).toBe("""
+            # Introduction
+            
+            This is a test document
+            - Item 1
+            - Item 2
+
+        """.trimIndent())
     }
 
     @Test
@@ -35,6 +46,18 @@ class MarkdownTest {
                 li("Item 2")
             }
         }
-        expect(doc.toMarkdown()).toBe("# Introduction\nThis is a test document\n1. Item 1\n2. Item 2\n")
+        expect(doc.toMarkdown()).toBe("""
+            # Introduction
+            
+            This is a test document
+            1. Item 1
+            2. Item 2
+
+        """.trimIndent())
+    }
+
+    @Test
+    fun should_be_able_to_have_inline_markdown_styles() {
+        TODO()
     }
 }

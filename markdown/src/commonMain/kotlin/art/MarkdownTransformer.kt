@@ -3,7 +3,7 @@ package art
 fun List<Element>.toMarkdown(): String = buildString {
     for (element in this@toMarkdown) {
         when (element) {
-            is Heading -> appendLine("#".repeat(element.level) + " " + element.span.text)
+            is Heading -> appendLine("#".repeat(element.level) + " " + element.span.text + "\n")
             is Paragraph -> appendLine(element.spans.joinToString(" ") { it.text })
             is Bullets -> for (item in element.items) {
                 appendLine("- ${item.text}")
