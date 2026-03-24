@@ -13,8 +13,7 @@ class MarkdownTest {
             """
             # Introduction
             
-            
-        """.trimIndent()
+        """.trimIndent() + "\n"
         )
     }
 
@@ -33,9 +32,10 @@ class MarkdownTest {
             # Introduction
             
             This is a test document
+            
             - Item 1
             - Item 2
-
+            
         """.trimIndent()
         )
     }
@@ -55,9 +55,10 @@ class MarkdownTest {
             # Introduction
             
             This is a test document
+            
             1. Item 1
             2. Item 2
-
+            
         """.trimIndent()
         )
     }
@@ -124,7 +125,6 @@ class MarkdownTest {
             | Name | Age |
             | --- | --- |
             | Alice | 30 |
-            
             
         """.trimIndent()
         )

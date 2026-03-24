@@ -7,22 +7,34 @@ fun List<Element>.toMarkdown(): String = buildString {
         when (element) {
             is Heading -> appendLine("#".repeat(element.level) + " " + element.span.text + "\n")
 
-            is Paragraph -> appendLine(element.spans.toMarkdown())
-
-            is Bullets -> for (item in element.items) {
-                appendLine("- ${item.toMarkdown()}")
+            is Paragraph -> {
+                appendLine(element.spans.toMarkdown())
+                appendLine()
             }
 
-            is Sequence -> for ((index, item) in element.items.withIndex()) {
-                appendLine("${index + 1}. ${item.toMarkdown()}")
+            is Bullets -> {
+                for (item in element.items) {
+                    appendLine("- ${item.toMarkdown()}")
+                }
+                appendLine()
             }
 
-            is Table -> appendLine(element.toMarkdown())
+            is Sequence -> {
+                for ((index, item) in element.items.withIndex()) {
+                    appendLine("${index + 1}. ${item.toMarkdown()}")
+                }
+                appendLine()
+            }
+
+            is Table -> {
+                appendLine(element.toMarkdown())
+                appendLine()
+            }
 
             else -> error("Unsupported element: $element")
         }
     }
-}
+}.trimEnd() + "\n"
 
 private fun Table.toMarkdown(): String = buildString {
     if (rows.isEmpty() || columns.isEmpty()) return@buildString
