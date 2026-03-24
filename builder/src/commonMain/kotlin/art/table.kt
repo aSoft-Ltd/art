@@ -1,18 +1,33 @@
 package art
 
 class TableBuilder(
+    val columns: MutableList<Column> = mutableListOf(),
     val rows: MutableList<Row> = mutableListOf()
 ) {
-    fun header(builder: CellBuilder.() -> Unit) {
-        rows.add(Row(header = true, CellBuilder().apply(builder).cells))
+    fun columns(builder: ColumnBuilder.() -> Unit) {
+        columns.addAll(ColumnBuilder().apply(builder).columns)
     }
 
-    fun row(builder: CellBuilder.() -> Unit) {
-        rows.add(Row(header = null, CellBuilder().apply(builder).cells))
+    fun row(builder: RowBuilder.() -> Unit) {
+        rows.add(Row(RowBuilder().apply(builder).cells))
+    }
+
+    internal fun build() = Table(0, columns, rows)
+}
+
+class ColumnBuilder(
+    val columns: MutableList<Column> = mutableListOf()
+) {
+    fun column(text: String, align: Align = Align.Left) {
+        columns.add(Column(align, listOf(Span(text))))
+    }
+
+    fun column(align: Align = Align.Left, builder: SpanBuilder.() -> Unit) {
+        columns.add(Column(align, SpanBuilder().apply(builder).spans))
     }
 }
 
-class CellBuilder(
+class RowBuilder(
     val cells: MutableList<List<Span>> = mutableListOf()
 ) {
     fun cell(text: String) {
@@ -25,5 +40,5 @@ class CellBuilder(
 }
 
 fun DocumentBuilder.table(builder: TableBuilder.() -> Unit) {
-    elements.add(Table(0, TableBuilder().apply(builder).rows))
+    elements.add(TableBuilder().apply(builder).build())
 }

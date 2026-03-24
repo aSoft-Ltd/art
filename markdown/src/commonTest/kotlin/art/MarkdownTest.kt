@@ -108,9 +108,9 @@ class MarkdownTest {
     fun should_be_able_to_render_a_table() {
         val doc = document {
             table {
-                header {
-                    cell("Name")
-                    cell("Age")
+                columns {
+                    column("Name")
+                    column("Age")
                 }
                 row {
                     cell("Alice")

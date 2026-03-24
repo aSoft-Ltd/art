@@ -6,6 +6,5 @@ import kotlinx.serialization.Serializable
 data class Image(
     val text: String,
     override val indent: Int = 0,
-    val link: String? = null,
-    val style: TextStyle? = null,
+    val link: String? = null
 ) : Element

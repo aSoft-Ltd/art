@@ -25,11 +25,10 @@ fun List<Element>.toMarkdown(): String = buildString {
 }
 
 private fun Table.toMarkdown(): String = buildString {
-    if (rows.size <= 1) return@buildString
-    val header = rows[0]
-    appendLine(header.toMarkdown())
-    appendLine(header.cells.toMarkdownRow { "---" })
-    for (row in rows.drop(1)) appendLine(row.toMarkdown())
+    if (rows.isEmpty() || columns.isEmpty()) return@buildString
+    appendLine(columns.toMarkdownRow { it.spans.toMarkdown() })
+    appendLine(columns.toMarkdownRow { "---" })
+    for (row in rows) appendLine(row.toMarkdown())
 }
 
 private fun <T> List<T>.toMarkdownRow(transform: (T) -> String) = joinToString(prefix = "| ", separator = " | ", postfix = " |", transform = transform)
