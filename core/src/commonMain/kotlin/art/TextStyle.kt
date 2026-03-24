@@ -3,7 +3,7 @@ package art
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Style(
+class TextStyle(
     val bold: Boolean? = null,
     val italic: Boolean? = null,
     val quote: Boolean? = null,

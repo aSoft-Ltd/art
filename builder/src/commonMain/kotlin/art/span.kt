@@ -8,23 +8,23 @@ class SpanBuilder(
     }
 
     fun bold(text: String) {
-        spans.add(Span(text, style = Style(bold = true)))
+        spans.add(Span(text, style = TextStyle(bold = true)))
     }
 
     fun italic(text: String) {
-        spans.add(Span(text, style = Style(italic = true)))
+        spans.add(Span(text, style = TextStyle(italic = true)))
     }
 
     fun quoted(text: String) {
-        spans.add(Span(text, style = Style(quote = true)))
+        spans.add(Span(text, style = TextStyle(quote = true)))
     }
 
     fun struck(text: String) {
-        spans.add(Span(text, style = Style(strike = true)))
+        spans.add(Span(text, style = TextStyle(strike = true)))
     }
 
     fun link(text: String, link: String) {
-        spans.add(Span(text, link = link, style = Style(strike = true)))
+        spans.add(Span(text, link = link, style = TextStyle(strike = true)))
     }
 }
 
