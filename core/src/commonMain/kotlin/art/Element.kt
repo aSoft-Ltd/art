@@ -1,5 +1,8 @@
 package art
 
-interface Element {
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed interface Element {
     val indent: Int
 }

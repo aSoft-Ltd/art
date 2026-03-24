@@ -1,5 +1,8 @@
 package art
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class Style(
     val bold: Boolean? = null,
     val italic: Boolean? = null,

@@ -63,7 +63,9 @@ kotlin {
         }
 
         commonTest.dependencies {
+            implementation(projects.artBuilder)
             implementation(kotlin("test"))
+            implementation(kotlinx.serialization.json)
             implementation(libs.kommander.core)
             implementation(libs.kommander.coroutines)
         }
