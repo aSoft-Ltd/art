@@ -1,5 +1,6 @@
 package art
 
+import kommander.expect
 import kotlin.test.Test
 
 class BuilderTest {
@@ -8,5 +9,6 @@ class BuilderTest {
         val doc = document {
             h1("Introduction")
         }
+        expect(doc).toBeOfSize(1)
     }
 }

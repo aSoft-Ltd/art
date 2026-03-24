@@ -15,4 +15,4 @@ fun includeSubs(base: String, path: String = base, vararg subs: String) {
 
 rootProject.name = "art"
 
-includeSubs("art", ".", "core", "builder")
+includeSubs("art", ".", "core", "builder", "markdown")
