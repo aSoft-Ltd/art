@@ -58,14 +58,12 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(kotlinx.serialization.core)
-            api(kotlinx.coroutines.core)?.because("We need to setup the supervisor job for a http polling connection")
+            api(projects.artCore)
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kommander.core)
-            implementation(libs.kommander.coroutines)
         }
 
         jvmTest.dependencies {
