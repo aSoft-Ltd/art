@@ -103,4 +103,30 @@ class MarkdownTest {
         """.trimIndent()
         )
     }
+
+    @Test
+    fun should_be_able_to_render_a_table() {
+        val doc = document {
+            table {
+                header {
+                    cell("Name")
+                    cell("Age")
+                }
+                row {
+                    cell("Alice")
+                    cell("30")
+                }
+            }
+        }
+
+        expect(doc.toMarkdown()).toBe(
+            """
+            | Name | Age |
+            | --- | --- |
+            | Alice | 30 |
+            
+            
+        """.trimIndent()
+        )
+    }
 }

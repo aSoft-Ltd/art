@@ -11,3 +11,12 @@ This text is [a link](https://www.google.com)
 
 
 Welcome to [aSoft](https://asoft.co.tz)
+
+
+
+
+## Table
+| First Header | Second Header |
+|--------------|---------------|
+| Content Cell | Content Cell  |
+| Content Cell | Content Cell  |

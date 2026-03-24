@@ -17,10 +17,24 @@ fun List<Element>.toMarkdown(): String = buildString {
                 appendLine("${index + 1}. ${item.toMarkdown()}")
             }
 
+            is Table -> appendLine(element.toMarkdown())
+
             else -> error("Unsupported element: $element")
         }
     }
 }
+
+private fun Table.toMarkdown(): String = buildString {
+    if (rows.size <= 1) return@buildString
+    val header = rows[0]
+    appendLine(header.toMarkdown())
+    appendLine(header.cells.toMarkdownRow { "---" })
+    for (row in rows.drop(1)) appendLine(row.toMarkdown())
+}
+
+private fun <T> List<T>.toMarkdownRow(transform: (T) -> String) = joinToString(prefix = "| ", separator = " | ", postfix = " |", transform = transform)
+
+private fun Row.toMarkdown(): String = cells.toMarkdownRow { it.toMarkdown() }
 
 @JvmName("toMarkdownSpans")
 private fun List<Span>.toMarkdown(): String = buildString {
