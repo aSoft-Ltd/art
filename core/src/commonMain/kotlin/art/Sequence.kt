@@ -5,5 +5,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 class Sequence(
     override val indent: Int,
+    val indexing: Indexing,
+    val closer: String,
     val items: List<List<Span>>
-) : Element
+) : Element {
+    enum class Indexing {
+        Numeric, ALPHABETIC, alphabetic,
+    }
+}

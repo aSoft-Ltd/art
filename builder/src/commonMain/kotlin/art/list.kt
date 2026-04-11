@@ -18,8 +18,12 @@ fun DocumentBuilder.ul(builder: ListBuilder.() -> Unit) {
     elements.add(Bullets(0, bullets.items))
 }
 
-fun DocumentBuilder.ol(builder: ListBuilder.() -> Unit) {
+fun DocumentBuilder.ol(
+    indexing: Sequence.Indexing = Sequence.Indexing.Numeric,
+    closer: String = ".",
+    builder: ListBuilder.() -> Unit
+) {
     val bullets = ListBuilder()
     bullets.builder()
-    elements.add(Sequence(0, bullets.items))
+    elements.add(Sequence(0, indexing, closer, bullets.items))
 }

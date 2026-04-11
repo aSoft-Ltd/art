@@ -35,7 +35,7 @@ fun String.parseMarkdown(): List<Element> {
                     items.add(lines[i].substring(dotIndex + 2).parseSpans())
                     i++
                 }
-                elements.add(Sequence(0, items))
+                elements.add(Sequence(0, Sequence.Indexing.Numeric, ".", items))
             }
 
             line.startsWith("|") -> {

@@ -2,10 +2,25 @@ package art
 
 import kotlin.jvm.JvmName
 
-fun List<Element>.toMarkdown(): String = buildString {
+private fun MutableMap<Int, Int>.number(level: Int): String {
+    val num = getOrPut(level) { 0 }
+    put(level, num + 1)
+    return "${num + 1}"
+}
+
+fun List<Element>.toMarkdown(
+    numbers: Boolean = false
+): String = buildString {
+    val headings = mutableMapOf<Int, Int>()
     for (element in this@toMarkdown) {
         when (element) {
-            is Heading -> appendLine("#".repeat(element.level) + " " + element.span.text + "\n")
+            is Heading -> {
+                if (numbers && element.level == 1) {
+                    appendLine("#".repeat(element.level) + " " + headings.number(1) + ". " + element.span.text + "\n")
+                } else {
+                    appendLine("#".repeat(element.level) + " " + element.span.text + "\n")
+                }
+            }
 
             is Paragraph -> {
                 appendLine(element.spans.toMarkdown())
@@ -21,7 +36,14 @@ fun List<Element>.toMarkdown(): String = buildString {
 
             is Sequence -> {
                 for ((index, item) in element.items.withIndex()) {
-                    appendLine("${index + 1}. ${item.toMarkdown()}")
+                    val entry = when (element.indexing) {
+                        Sequence.Indexing.Numeric -> 1 + index
+                        Sequence.Indexing.ALPHABETIC -> 'A' + index
+                        Sequence.Indexing.alphabetic -> 'a' + index
+                    }
+                    append("$entry${element.closer} ")
+                    appendLine(item.toMarkdown())
+                    appendLine()
                 }
                 appendLine()
             }
