@@ -2,21 +2,15 @@ package art
 
 import kotlin.jvm.JvmName
 
-private fun MutableMap<Int, Int>.number(level: Int): String {
-    val num = getOrPut(level) { 0 }
-    put(level, num + 1)
-    return "${num + 1}"
-}
-
 fun List<Element>.toMarkdown(
     numbers: Boolean = false
 ): String = buildString {
-    val headings = mutableMapOf<Int, Int>()
+    val contents = toc()
     for (element in this@toMarkdown) {
         when (element) {
             is Heading -> {
-                if (numbers && element.level == 1) {
-                    appendLine("#".repeat(element.level) + " " + headings.number(1) + ". " + element.span.text + "\n")
+                if (numbers) {
+                    appendLine("#".repeat(element.level) + " " + contents.find { it.text == element.span.text }?.prefix + ". " + element.span.text + "\n")
                 } else {
                     appendLine("#".repeat(element.level) + " " + element.span.text + "\n")
                 }
