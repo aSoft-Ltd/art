@@ -8,7 +8,7 @@ fun List<Element>.toMarkdown(
     contents: List<TOCItem>? = null
 ): String = buildString {
     val toc = contents ?: if (indent == 0) toc() else emptyList()
-    val tab = "  ".repeat(indent)
+    val tab = "    ".repeat(indent)
     var i = 0
     while (i < this@toMarkdown.size) {
         val element = this@toMarkdown[i]
@@ -74,6 +74,7 @@ private fun StringBuilder.appendListItem(
     indent: Int,
     toc: List<TOCItem>
 ) {
+    appendLine()
     append(prefix)
     if (item.elements.isEmpty()) {
         appendLine()
