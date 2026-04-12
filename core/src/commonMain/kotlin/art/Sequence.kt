@@ -7,7 +7,7 @@ class Sequence(
     override val indent: Int,
     val indexing: Indexing,
     val closer: String,
-    val items: List<List<Span>>
+    val items: List<ListItem>
 ) : Element {
     enum class Indexing {
         Numeric, ALPHABETIC, alphabetic,

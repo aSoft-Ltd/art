@@ -24,8 +24,8 @@ class MarkdownParserTest {
         expect(elements.size).toBe(1)
         val list = elements[0] as Bullets
         expect(list.items.size).toBe(2)
-        expect(list.items[0][0].text).toBe("Item 1")
-        expect(list.items[1][0].text).toBe("Item 2")
+        expect((list.items[0].elements[0] as Span).text).toBe("Item 1")
+        expect((list.items[1].elements[0] as Span).text).toBe("Item 2")
     }
 
     @Test
@@ -38,8 +38,8 @@ class MarkdownParserTest {
         expect(elements.size).toBe(1)
         val list = elements[0] as Sequence
         expect(list.items.size).toBe(2)
-        expect(list.items[0][0].text).toBe("Item 1")
-        expect(list.items[1][0].text).toBe("Item 2")
+        expect((list.items[0].elements[0] as Span).text).toBe("Item 1")
+        expect((list.items[1].elements[0] as Span).text).toBe("Item 2")
     }
 
     @Test
@@ -100,5 +100,23 @@ class MarkdownParserTest {
         
         // Re-generate markdown from parsed and check if it's the same
         expect(parsed.toMarkdown()).toBe(markdown)
+    }
+
+    @Test
+    fun should_be_able_to_parse_nested_lists() {
+        val md = """
+            1. Item 1
+               - Sub 1
+               - Sub 2
+            2. Item 2
+        """.trimIndent()
+        val elements = md.parseMarkdown()
+        expect(elements.size).toBe(1)
+        val list = elements[0] as Sequence
+        expect(list.items.size).toBe(2)
+        // Item 1 has Span("Item 1") and Bullets in its elements
+        expect(list.items[0].elements.size).toBe(2) 
+        val subList = list.items[0].elements[1] as Bullets
+        expect(subList.items.size).toBe(2)
     }
 }

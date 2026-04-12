@@ -11,58 +11,129 @@ fun String.parseMarkdown(): List<Element> {
             continue
         }
 
+        val indent = line.takeWhile { it == ' ' }.length
+        val trimmedLine = line.trimStart()
+
         when {
-            line.startsWith("#") -> {
-                val level = line.takeWhile { it == '#' }.length
-                val text = line.drop(level).trim()
-                elements.add(Heading(level, 0, Span(text)))
+            trimmedLine.startsWith("#") -> {
+                val level = trimmedLine.takeWhile { it == '#' }.length
+                val text = trimmedLine.drop(level).trim()
+                elements.add(Heading(level, indent, Span(text)))
                 i++
             }
 
-            line.startsWith("- ") -> {
-                val items = mutableListOf<List<Span>>()
-                while (i < lines.size && lines[i].startsWith("- ")) {
-                    items.add(lines[i].substring(2).parseSpans())
-                    i++
+            trimmedLine.startsWith("- ") -> {
+                val items = mutableListOf<ListItem>()
+                val listIndent = indent
+                while (i < lines.size) {
+                    val l = lines[i]
+                    if (l.isBlank()) {
+                        i++
+                        continue
+                    }
+                    val currIndent = l.takeWhile { it == ' ' }.length
+                    val currTrimmed = l.trimStart()
+
+                    if (currIndent == listIndent && currTrimmed.startsWith("- ")) {
+                        val text = currTrimmed.substring(2)
+                        i++
+                        val nestedLines = mutableListOf<String>()
+                        while (i < lines.size) {
+                            val nl = lines[i]
+                            if (nl.isBlank()) {
+                                var j = i + 1
+                                while (j < lines.size && lines[j].isBlank()) j++
+                                if (j < lines.size && lines[j].takeWhile { it == ' ' }.length > listIndent) {
+                                    nestedLines.add(nl)
+                                    i++
+                                } else break
+                            } else if (nl.takeWhile { it == ' ' }.length > listIndent) {
+                                nestedLines.add(nl)
+                                i++
+                            } else break
+                        }
+                        val nestedElements = if (nestedLines.isNotEmpty()) {
+                            nestedLines.joinToString("\n").parseMarkdown()
+                        } else emptyList()
+                        items.add(ListItem(text.parseSpans() + nestedElements))
+                    } else break
                 }
-                elements.add(Bullets(0, items))
+                elements.add(Bullets(listIndent, items))
             }
 
-            line.firstOrNull()?.isDigit() == true && line.contains(". ") -> {
-                val items = mutableListOf<List<Span>>()
-                while (i < lines.size && lines[i].firstOrNull()?.isDigit() == true && lines[i].contains(". ")) {
-                    val dotIndex = lines[i].indexOf(". ")
-                    items.add(lines[i].substring(dotIndex + 2).parseSpans())
-                    i++
+            (trimmedLine.firstOrNull()?.isDigit() == true || (trimmedLine.length > 2 && trimmedLine[0].isLetter() && trimmedLine[1] == '.' && trimmedLine[2] == ' ')) && trimmedLine.contains(". ") -> {
+                val items = mutableListOf<ListItem>()
+                val listIndent = indent
+                val firstDotIndex = trimmedLine.indexOf(". ")
+                val indexing = when {
+                    trimmedLine[0].isDigit() -> Sequence.Indexing.Numeric
+                    trimmedLine[0].isUpperCase() -> Sequence.Indexing.ALPHABETIC
+                    else -> Sequence.Indexing.alphabetic
                 }
-                elements.add(Sequence(0, Sequence.Indexing.Numeric, ".",items))
+                val closer = trimmedLine.substring(firstDotIndex, firstDotIndex + 1)
+
+                while (i < lines.size) {
+                    val l = lines[i]
+                    if (l.isBlank()) {
+                        i++
+                        continue
+                    }
+                    val currIndent = l.takeWhile { it == ' ' }.length
+                    val currTrimmed = l.trimStart()
+
+                    if (currIndent == listIndent && (currTrimmed.firstOrNull()?.isDigit() == true || (currTrimmed.length > 2 && currTrimmed[0].isLetter() && currTrimmed[1] == '.' && currTrimmed[2] == ' ')) && currTrimmed.contains(". ")) {
+                        val dIdx = currTrimmed.indexOf(". ")
+                        val text = currTrimmed.substring(dIdx + 2)
+                        i++
+                        val nestedLines = mutableListOf<String>()
+                        while (i < lines.size) {
+                            val nl = lines[i]
+                            if (nl.isBlank()) {
+                                var j = i + 1
+                                while (j < lines.size && lines[j].isBlank()) j++
+                                if (j < lines.size && lines[j].takeWhile { it == ' ' }.length > listIndent) {
+                                    nestedLines.add(nl)
+                                    i++
+                                } else break
+                            } else if (nl.takeWhile { it == ' ' }.length > listIndent) {
+                                nestedLines.add(nl)
+                                i++
+                            } else break
+                        }
+                        val nestedElements = if (nestedLines.isNotEmpty()) {
+                            nestedLines.joinToString("\n").parseMarkdown()
+                        } else emptyList()
+                        items.add(ListItem(text.parseSpans() + nestedElements))
+                    } else break
+                }
+                elements.add(Sequence(listIndent, indexing, closer, items))
             }
 
-            line.startsWith("|") -> {
-                val headerLine = line
+            trimmedLine.startsWith("|") -> {
+                val headerLine = trimmedLine
                 i++
-                if (i < lines.size && lines[i].startsWith("|") && lines[i].contains("---")) {
+                if (i < lines.size && lines[i].trimStart().startsWith("|") && lines[i].contains("---")) {
                     i++ // skip separator line
                     val headerCells = headerLine.split("|").filter { it.isNotBlank() }.map { it.trim() }
                     val columns = headerCells.map { Column(spans = it.parseSpans()) }
 
                     val rows = mutableListOf<Row>()
-                    while (i < lines.size && lines[i].startsWith("|")) {
-                        val rowCells = lines[i].split("|").filter { it.isNotBlank() }.map { it.trim().parseSpans() }
+                    while (i < lines.size && lines[i].trimStart().startsWith("|")) {
+                        val rowCells = lines[i].trimStart().split("|").filter { it.isNotBlank() }.map { it.trim().parseSpans() }
                         val row = Row()
                         row.cells.addAll(rowCells)
                         rows.add(row)
                         i++
                     }
-                    elements.add(Table(0, columns, rows))
+                    elements.add(Table(indent, columns, rows))
                 } else {
-                    // Not a table, just a paragraph starting with |
-                    elements.add(Paragraph(0, line.parseSpans()))
+                    elements.add(Paragraph(indent, trimmedLine.parseSpans()))
+                    i++
                 }
             }
 
             else -> {
-                elements.add(Paragraph(0, line.parseSpans()))
+                elements.add(Paragraph(indent, trimmedLine.parseSpans()))
                 i++
             }
         }
@@ -72,7 +143,6 @@ fun String.parseMarkdown(): List<Element> {
 
 private fun String.parseSpans(): List<Span> {
     val spans = mutableListOf<Span>()
-    var current = this
     val regex = Regex("""(\*\*.*?\*\*|\*.*?\*|`.*?`|~~.*?~~|\[.*?\]\(.*?\))""")
 
     var lastIdx = 0

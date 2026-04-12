@@ -3,29 +3,44 @@ package art
 import kotlin.jvm.JvmName
 
 fun List<Element>.toMarkdown(
-    numbers: Boolean = false
+    numbers: Boolean = false,
+    indent: Int = 0,
+    contents: List<TOCItem>? = null
 ): String = buildString {
-    val contents = toc()
-    for (element in this@toMarkdown) {
+    val toc = contents ?: if (indent == 0) toc() else emptyList()
+    val tab = "  ".repeat(indent)
+    var i = 0
+    while (i < this@toMarkdown.size) {
+        val element = this@toMarkdown[i]
         when (element) {
-            is Heading -> {
-                if (numbers) {
-                    appendLine("#".repeat(element.level) + " " + contents.find { it.text == element.span.text }?.prefix + ". " + element.span.text + "\n")
-                } else {
-                    appendLine("#".repeat(element.level) + " " + element.span.text + "\n")
+            is Span -> {
+                val spans = mutableListOf<Span>()
+                while (i < this@toMarkdown.size && this@toMarkdown[i] is Span) {
+                    spans.add(this@toMarkdown[i] as Span)
+                    i++
                 }
+                appendLine(tab + spans.toMarkdown())
+                if (i < this@toMarkdown.size) appendLine()
+            }
+
+            is Heading -> {
+                val prefix = if (numbers) toc.find { it.text == element.span.text }?.prefix?.let { "$it. " } ?: "" else ""
+                appendLine(tab + "#".repeat(element.level) + " " + prefix + element.span.text + "\n")
+                i++
             }
 
             is Paragraph -> {
-                appendLine(element.spans.toMarkdown())
+                appendLine(tab + element.spans.toMarkdown())
                 appendLine()
+                i++
             }
 
             is Bullets -> {
                 for (item in element.items) {
-                    appendLine("- ${item.toMarkdown()}")
+                    appendListItem("$tab- ", item, numbers, indent, toc)
                 }
-                appendLine()
+                if (indent == 0) appendLine()
+                i++
             }
 
             is Sequence -> {
@@ -35,28 +50,61 @@ fun List<Element>.toMarkdown(
                         Sequence.Indexing.ALPHABETIC -> 'A' + index
                         Sequence.Indexing.alphabetic -> 'a' + index
                     }
-                    append("$entry${element.closer} ")
-                    appendLine(item.toMarkdown())
-                    appendLine()
+                    appendListItem("$tab$entry${element.closer} ", item, numbers, indent, toc)
                 }
-                appendLine()
+                if (indent == 0) appendLine()
+                i++
             }
 
             is Table -> {
-                appendLine(element.toMarkdown())
+                appendLine(element.toMarkdown(tab))
                 appendLine()
+                i++
             }
 
-            else -> error("Unsupported element: $element")
+            else -> i++
         }
     }
-}.trimEnd() + "\n"
+}.let { if (indent == 0) it.trimEnd() + "\n" else it }
 
-private fun Table.toMarkdown(): String = buildString {
+private fun StringBuilder.appendListItem(
+    prefix: String,
+    item: ListItem,
+    numbers: Boolean,
+    indent: Int,
+    toc: List<TOCItem>
+) {
+    append(prefix)
+    if (item.elements.isEmpty()) {
+        appendLine()
+        return
+    }
+
+    var idx = 0
+    if (item.elements.isNotEmpty() && item.elements[idx] is Span) {
+        val leadingSpans = mutableListOf<Span>()
+        while (idx < item.elements.size && item.elements[idx] is Span) {
+            leadingSpans.add(item.elements[idx] as Span)
+            idx++
+        }
+        append(leadingSpans.toMarkdown())
+        appendLine()
+    } else {
+        appendLine()
+    }
+
+    if (idx < item.elements.size) {
+        val remaining = item.elements.drop(idx)
+        append(remaining.toMarkdown(numbers, indent + 1, toc))
+    }
+    appendLine()
+}
+
+private fun Table.toMarkdown(tab: String): String = buildString {
     if (rows.isEmpty() || columns.isEmpty()) return@buildString
-    appendLine(columns.toMarkdownRow { it.spans.toMarkdown() })
-    appendLine(columns.toMarkdownRow { "---" })
-    for (row in rows) appendLine(row.toMarkdown())
+    appendLine(tab + columns.toMarkdownRow { it.spans.toMarkdown() })
+    appendLine(tab + columns.toMarkdownRow { "---" })
+    for (row in rows) appendLine(tab + row.toMarkdown())
 }
 
 private fun <T> List<T>.toMarkdownRow(transform: (T) -> String) = joinToString(prefix = "| ", separator = " | ", postfix = " |", transform = transform)
