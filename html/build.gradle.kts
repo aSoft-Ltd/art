@@ -10,7 +10,7 @@ plugins {
     alias(kotlinz.plugins.dokka)
 }
 
-description = "The markdown renderer for the aSoft Rich Text Format"
+description = "The html renderer for the aSoft Rich Text Format"
 
 kotlin {
     applyHierarchyTemplate {
@@ -50,6 +50,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.artCore)
+            api(kotlinx.html)
         }
 
         commonTest.dependencies {

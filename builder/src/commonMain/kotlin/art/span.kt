@@ -24,7 +24,7 @@ class SpanBuilder(
     }
 
     fun link(text: String, link: String) {
-        spans.add(Span(text, link = link, style = TextStyle(strike = true)))
+        spans.add(Span(text, link = link))
     }
 }
 
