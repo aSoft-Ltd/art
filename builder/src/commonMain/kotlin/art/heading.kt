@@ -1,7 +1,8 @@
 package art
 
 private fun DocumentBuilder.heading(level: Int, text: String) {
-    elements.add(Heading(level, 0, Span(text)))
+    val salt = elements.filterIsInstance<Heading>().filter { it.span.text == text }.size + 1
+    elements.add(Heading(level, 0, Span(text), if (salt == 1) null else salt))
 }
 
 fun DocumentBuilder.h1(text: String) = heading(1, text)

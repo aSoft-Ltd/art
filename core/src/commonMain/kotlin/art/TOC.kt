@@ -7,6 +7,7 @@ data class TOCItem(
     val level: Int,
     val prefix: String,
     val text: String,
+    val salt: Int?,
     val indent: Int
 )
 
@@ -39,6 +40,7 @@ fun List<Element>.toc(): List<TOCItem> {
             level = level,
             prefix = prefix,
             text = heading.span.text,
+            salt = heading.salt,
             indent = level - 1
         )
     }

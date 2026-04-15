@@ -18,7 +18,7 @@ fun String.parseMarkdown(): List<Element> {
             trimmedLine.startsWith("#") -> {
                 val level = trimmedLine.takeWhile { it == '#' }.length
                 val text = trimmedLine.drop(level).trim()
-                elements.add(Heading(level, indent, Span(text)))
+                elements.add(Heading(level, indent, Span(text), elements.filterIsInstance<Heading>().size + 1))
                 i++
             }
 
@@ -81,7 +81,9 @@ fun String.parseMarkdown(): List<Element> {
                     val currIndent = l.takeWhile { it == ' ' }.length
                     val currTrimmed = l.trimStart()
 
-                    if (currIndent == listIndent && (currTrimmed.firstOrNull()?.isDigit() == true || (currTrimmed.length > 2 && currTrimmed[0].isLetter() && currTrimmed[1] == '.' && currTrimmed[2] == ' ')) && currTrimmed.contains(". ")) {
+                    if (currIndent == listIndent && (currTrimmed.firstOrNull()
+                            ?.isDigit() == true || (currTrimmed.length > 2 && currTrimmed[0].isLetter() && currTrimmed[1] == '.' && currTrimmed[2] == ' ')) && currTrimmed.contains(". ")
+                    ) {
                         val dIdx = currTrimmed.indexOf(". ")
                         val text = currTrimmed.substring(dIdx + 2)
                         i++

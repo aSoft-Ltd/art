@@ -19,44 +19,45 @@ internal fun FlowContent.heading(
     toc: List<TOCItem>
 ) {
     val prefix = if (numbers) {
-        toc.find { it.text == h.span.text }?.prefix
+        toc.find { it.text == h.span.text && h.salt == it.salt }?.prefix
     } else null
 
     val text = if (prefix != null) "$prefix. ${h.span.text}" else h.span.text
+    val uid = "${h.span.text}-${h.salt ?: 1}".slug()
 
     when (h.level) {
         1 -> h1 {
-            id = h.span.text.slug()
+            id = uid
             style = "padding-top:0.5rem"
             +text
         }
 
         2 -> h2 {
-            id = h.span.text.slug()
+            id = uid
             style = "padding-top:0.5rem"
             +text
         }
 
         3 -> h3 {
-            id = h.span.text.slug()
+            id = uid
             style = "padding-top:0.5rem"
             +text
         }
 
         4 -> h4 {
-            id = h.span.text.slug()
+            id = uid
             style = "padding-top:0.5rem"
             +text
         }
 
         5 -> h5 {
-            id = h.span.text.slug()
+            id = uid
             style = "padding-top:0.5rem"
             +text
         }
 
         else -> h6 {
-            id = h.span.text.slug()
+            id = uid
             style = "padding-top:0.5rem"
             +text
         }
