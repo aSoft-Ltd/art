@@ -4,6 +4,7 @@ import art.Paragraph
 import art.Span
 import kotlinx.html.FlowContent
 import kotlinx.html.a
+import kotlinx.html.p
 import kotlinx.html.span
 import kotlinx.html.style
 
@@ -24,6 +25,7 @@ internal fun FlowContent.span(s: Span) {
     }
 }
 
-internal fun FlowContent.paragraph(p: Paragraph) {
-    for (span in p.spans) span(span)
+internal fun FlowContent.paragraph(paragraph: Paragraph) = p {
+    style = "padding-top: 1rem"
+    for (span in paragraph.spans) span(span)
 }
