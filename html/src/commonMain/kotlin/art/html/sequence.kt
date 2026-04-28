@@ -1,10 +1,10 @@
 package art.html
 
+import art.Art
 import art.Sequence
 import art.Sequence.Indexing.ALPHABETIC
 import art.Sequence.Indexing.Numeric
 import art.Sequence.Indexing.alphabetic
-import art.Art
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.style
@@ -21,7 +21,7 @@ internal fun FlowContent.sequence(
                 alphabetic -> 'a' + index
             }
             div {
-                style = "display: flex"
+                style = "display: flex; padding-top: 0.5rem"
                 div { +"$entry${s.closer}" }
 
                 Art(
