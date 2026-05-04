@@ -27,6 +27,16 @@ class ListItemBuilder(
         elements.add(Span(text, link = link))
     }
 
+    fun p(text: String) {
+        elements.add(Span(text))
+    }
+
+    fun p(builder: SpanBuilder.() -> Unit) {
+        val spans = SpanBuilder()
+        spans.builder()
+        elements.add(Paragraph(1, spans.spans))
+    }
+
     fun ul(builder: ListBuilder.() -> Unit) {
         val bullets = ListBuilder()
         bullets.builder()
